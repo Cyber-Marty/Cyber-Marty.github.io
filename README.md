@@ -1,4 +1,4 @@
-# **📈 AI Scaling Laws Interactive Report (AI 扩展定律互动报告)**
+# **📈 AI Scaling Laws Interactive Report (AI 扩展定律互动报告，信息获取截至2025年12月27日)**
 
 一个探索人工智能“物理学”的互动式单页应用（SPA）。从 Kaplan 定律到 Chinchilla 修正，再到最新的推理时间扩展（Inference-Time Scaling）。
 
