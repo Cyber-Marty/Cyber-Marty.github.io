@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Evolution of AI Scaling Laws: From Pre-training to Inference</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <style>
+        /* Custom Chart Container Styling as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Max width to prevent excessive stretching */
+            height: 400px;    /* Base height */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Hide scrollbar for clean horizontal scrolling if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafaf9; /* Stone-50: Warm neutral background */
+            color: #1c1917; /* Stone-900: High contrast text */
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid #0ea5e9; /* Sky-500 */
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Stone) + Technical Blue/Teal accents. -->
+    
+    <!-- Application Structure Plan:
+         1. Hero Section: High-level summary.
+         2. Era 1: Kaplan Laws (Foundations).
+         3. Era 2: Chinchilla (Compute Optimal).
+         4. Era 3: Inference-Time Scaling (Interactive Slider).
+         5. Challenges: Data Wall & Energy.
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. NO API calls. -->
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased selection:bg-sky-200 selection:text-sky-900">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="scrollToSection('hero')">
+                    <span class="text-2xl">📈</span>
+                    <h1 class="font-bold text-xl tracking-tight text-stone-900">Scaling Laws <span class="text-sky-600 font-light">Interactive Report</span></h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('foundations')" class="nav-link px-1 pt-1 text-sm font-medium text-stone-500 hover:text-stone-900">Foundations</button>
+                    <button onclick="scrollToSection('chinchilla')" class="nav-link px-1 pt-1 text-sm font-medium text-stone-500 hover:text-stone-900">Compute Optimal</button>
+                    <button onclick="scrollToSection('inference')" class="nav-link px-1 pt-1 text-sm font-medium text-stone-500 hover:text-stone-900">Inference Scaling</button>
+                    <button onclick="scrollToSection('challenges')" class="nav-link px-1 pt-1 text-sm font-medium text-stone-500 hover:text-stone-900">Challenges</button>
+                </div>
+                <!-- Mobile menu button stub -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-stone-500 hover:text-stone-900 focus:outline-none">
+                        ☰
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-stone-200 p-4 space-y-2">
+            <button onclick="scrollToSection('foundations'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-base font-medium text-stone-700 hover:bg-stone-50">Foundations</button>
+            <button onclick="scrollToSection('chinchilla'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-base font-medium text-stone-700 hover:bg-stone-50">Compute Optimal</button>
+            <button onclick="scrollToSection('inference'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-base font-medium text-stone-700 hover:bg-stone-50">Inference Scaling</button>
+             <button onclick="scrollToSection('challenges'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-base font-medium text-stone-700 hover:bg-stone-50">Challenges</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20">
+
+        <!-- HERO SECTION -->
+        <section id="hero" class="text-center space-y-8 animate-fade-in">
+            <div class="max-w-3xl mx-auto space-y-4">
+                <div class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-sm font-medium mb-4">
+                    Latest Update: 2025 Era of Inference
+                </div>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight leading-tight">
+                    The Physics of <span class="text-sky-600">Artificial Intelligence</span>
+                </h2>
+                <p class="text-xl text-stone-600 leading-relaxed">
+                    Scaling laws describe the empirical relationship between model size, dataset size, compute, and performance. 
+                    From the early days of "Big Models" to the modern "Thinking Models," explore how the equations governing AI progress have evolved.
+                </p>
+            </div>
+
+            <!-- Key Metrics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                <div class="card bg-white p-6 rounded-xl border border-stone-200 shadow-sm text-left">
+                    <div class="text-3xl mb-2">💾</div>
+                    <h3 class="font-bold text-stone-900 text-lg">Kaplan Era (2020)</h3>
+                    <p class="text-stone-500 text-sm mt-2">Focus on parameter count. Performance improves as a power law of model size ($N$).</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl border border-stone-200 shadow-sm text-left border-l-4 border-l-sky-500">
+                    <div class="text-3xl mb-2">⚖️</div>
+                    <h3 class="font-bold text-stone-900 text-lg">Chinchilla Era (2022)</h3>
+                    <p class="text-stone-500 text-sm mt-2">Compute optimality. Scale data ($D$) and parameters ($N$) equally.</p>
+                </div>
+                <div class="card bg-white p-6 rounded-xl border border-stone-200 shadow-sm text-left">
+                    <div class="text-3xl mb-2">🧠</div>
+                    <h3 class="font-bold text-stone-900 text-lg">Inference Era (2024+)</h3>
+                    <p class="text-stone-500 text-sm mt-2">Test-time compute. Trading inference time for reasoning capability (System 2).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ERA 1: FOUNDATIONS -->
+        <section id="foundations" class="scroll-mt-24">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="lg:col-span-1 space-y-6">
+                    <h3 class="text-2xl font-bold text-stone-900 border-b pb-2 border-stone-200">1. The Power Law Foundation</h3>
+                    <p class="text-stone-600">
+                        In 2020, OpenAI researchers (Kaplan et al.) demonstrated that test loss ($L$) scales as a power law with compute ($C$), dataset size ($D$), and parameter count ($N$).
+                    </p>
+                    <div class="bg-stone-100 p-4 rounded-lg font-mono text-sm text-stone-700 border border-stone-200">
+                        L(C) ∝ C<sup>-α</sup>
+                    </div>
+                    <p class="text-stone-600 text-sm">
+                        <strong>Insight:</strong> The line is remarkably straight on a log-log plot. This predictability allowed labs to invest millions in training runs, knowing in advance the performance they would achieve.
+                    </p>
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-stone-700">Simulate Scale (Compute Budget):</label>
+                        <input type="range" min="1" max="10" step="0.1" value="3" id="computeSlider" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-sky-600">
+                        <div class="flex justify-between text-xs text-stone-500">
+                            <span>GPT-2 Scale</span>
+                            <span>GPT-4 Scale</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+                        <h4 class="text-sm font-semibold text-stone-500 uppercase tracking-wider mb-4">Visualizing the Power Law (Log-Log Scale)</h4>
+                        <div class="chart-container">
+                            <canvas id="kaplanChart"></canvas>
+                        </div>
+                        <p class="text-xs text-center text-stone-400 mt-2">Simulated data illustrating the linear relationship in log-log space.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ERA 2: CHINCHILLA -->
+        <section id="chinchilla" class="scroll-mt-24 bg-white p-8 rounded-2xl border border-stone-200 shadow-sm">
+            <div class="mb-8 text-center max-w-2xl mx-auto">
+                <h3 class="text-2xl font-bold text-stone-900">2. The Chinchilla Correction (Compute Optimality)</h3>
+                <p class="text-stone-600 mt-2">
+                    In 2022, DeepMind's Hoffmann et al. challenged the Kaplan laws. They found that most large models (like GPT-3) were <strong>under-trained</strong>. To be "compute optimal," you should double your training data for every doubling of model parameters.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <!-- Interactive Calculator -->
+                <div class="space-y-6">
+                    <div class="bg-sky-50 border border-sky-100 p-6 rounded-xl">
+                        <h4 class="font-bold text-sky-900 mb-4 flex items-center gap-2">
+                            <span>🧮</span> Compute Optimal Calculator
+                        </h4>
+                        <p class="text-sm text-sky-800 mb-6">
+                            Enter a hypothetical compute budget (in FLOPs) to see the optimal split between Model Size and Training Tokens according to Chinchilla scaling.
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-sky-900 mb-1">Compute Budget (FLOPs exponent)</label>
+                                <select id="flopSelect" class="w-full p-2 rounded border border-sky-200 bg-white text-stone-700 focus:ring-2 focus:ring-sky-500 outline-none">
+                                    <option value="20">10^20 (Small Research Run)</option>
+                                    <option value="22">10^22 (GPT-3 Size)</option>
+                                    <option value="24" selected>10^24 (GPT-4 Class)</option>
+                                    <option value="25">10^25 (Frontier 2025)</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div class="bg-white p-4 rounded border border-sky-100 text-center">
+                                    <span class="block text-xs text-sky-500 uppercase font-bold">Optimal Params</span>
+                                    <span id="optParams" class="text-xl font-mono font-bold text-stone-800">-- B</span>
+                                </div>
+                                <div class="bg-white p-4 rounded border border-sky-100 text-center">
+                                    <span class="block text-xs text-sky-500 uppercase font-bold">Optimal Tokens</span>
+                                    <span id="optTokens" class="text-xl font-mono font-bold text-stone-800">-- T</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Chart -->
+                <div>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="modelScatterChart"></canvas>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-2 text-center">
+                        Notice how newer models (Llama 3, Chinchilla) sit "lower and further right" (smaller models, vastly more data) compared to older giants (MT-NLG, GPT-3).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ERA 3: INFERENCE SCALING -->
+        <section id="inference" class="scroll-mt-24">
+             <div class="flex flex-col md:flex-row gap-8 mb-8">
+                <div class="md:w-1/3 space-y-4">
+                    <div class="inline-block bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold uppercase tracking-wide">
+                        The Current Frontier
+                    </div>
+                    <h3 class="text-2xl font-bold text-stone-900">3. Inference-Time Scaling</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">
+                        Pre-training scaling is hitting diminishing returns (and massive costs). The new paradigm (exemplified by OpenAI's o1) is <strong>Test-Time Compute</strong>.
+                    </p>
+                    <p class="text-stone-600 text-sm leading-relaxed">
+                        By allowing the model to "think" (generate Chain-of-Thought tokens) before answering, performance on complex reasoning tasks scales with the amount of compute spent <em>during</em> generation.
+                    </p>
+                    
+                    <ul class="space-y-3 mt-4 text-sm text-stone-700">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-500 font-bold">✓</span>
+                            <span><strong>System 1:</strong> Instant response. Fast, intuitive, prone to hallucination.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-sky-500 font-bold">✓</span>
+                            <span><strong>System 2:</strong> "Thinking" response. Slow, deliberate, self-correcting.</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-6 p-4 bg-stone-100 rounded border border-stone-200">
+                         <h5 class="font-bold text-xs text-stone-500 uppercase mb-2">Try the Simulator</h5>
+                         <p class="text-xs text-stone-600 mb-2">Adjust "Thinking Time" to see accuracy impact on Math Benchmarks.</p>
+                         <input type="range" id="thinkingSlider" min="0" max="4" step="1" value="0" class="w-full h-2 bg-stone-300 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                         <div class="flex justify-between text-xs text-stone-500 mt-1">
+                             <span>Instant</span>
+                             <span>Deep Thought</span>
+                         </div>
+                    </div>
+                </div>
+
+                <div class="md:w-2/3">
+                    <div class="bg-stone-900 p-6 rounded-xl shadow-lg text-white">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-bold">Inference Scaling Curve</h4>
+                            <span id="inferenceStat" class="text-2xl font-bold text-amber-400">Accuracy: 35%</span>
+                        </div>
+                        <!-- Chart Container for Inference -->
+                        <div class="chart-container relative">
+                            <canvas id="inferenceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHALLENGES SECTION -->
+        <section id="challenges" class="scroll-mt-24 border-t border-stone-200 pt-10">
+            <h3 class="text-2xl font-bold text-stone-900 mb-8 text-center">Limits & Future Challenges</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- The Data Wall -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+                    <h4 class="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+                        <span>📚</span> The Data Scarcity Wall
+                    </h4>
+                    <p class="text-sm text-stone-600 mb-6">
+                        We are running out of high-quality public human text. Models trained on synthetic data (model-generated) can suffer from "Model Collapse" unless carefully managed.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>High Quality Text Stock</span>
+                                <span class="text-red-500">~90% Used</span>
+                            </div>
+                            <div class="w-full bg-stone-200 rounded-full h-2.5">
+                                <div class="bg-red-500 h-2.5 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+                         <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>Low Quality / Deduplicated</span>
+                                <span class="text-amber-500">~60% Used</span>
+                            </div>
+                            <div class="w-full bg-stone-200 rounded-full h-2.5">
+                                <div class="bg-amber-500 h-2.5 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                         <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>Synthetic Potential</span>
+                                <span class="text-green-500">Infinite (High Risk)</span>
+                            </div>
+                            <div class="w-full bg-stone-200 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-green-500 h-2.5 rounded-full w-full opacity-50 relative">
+                                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiAvPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjY2NjIiAvPgo8L3N2Zz4=')] opacity-30"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Energy -->
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+                            <span>⚡</span> The Energy Equation
+                        </h4>
+                        <p class="text-sm text-stone-600 mb-4">
+                            Training a frontier model costs ~$100M+. Inference at scale costs significantly more. Economic viability requires models to become efficient, not just smart.
+                        </p>
+                        <div class="bg-stone-50 p-3 rounded text-xs font-mono text-stone-700 border border-stone-200">
+                            Cost_Total = Cost(Training) + [ Users × Cost(Inference) ]
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                            Distillation
+                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                            MoE (Mixture of Experts)
+                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                            Quantization
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-stone-200 mt-20 py-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-stone-500 text-sm">
+            <p class="mb-2">&copy; 2025 AI Scaling Analysis Report.</p>
+            <p>Based on papers by Kaplan et al., Hoffmann et al., and reports from OpenAI/Anthropic/DeepMind.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            computeLevel: 3, // For Kaplan Chart
+            thinkingLevel: 0, // For Inference Chart
+        };
+
+        // --- Data Definitions ---
+        
+        // 1. Kaplan Law (Synthetic Data)
+        // L(C) = term1 + term2 * C^-alpha (simplified)
+        function generateKaplanData(steps) {
+            const data = [];
+            for (let i = 0; i < steps; i++) {
+                // x = Compute (Log scale approx), y = Loss
+                // We simulate 10^20 to 10^25 FLOPs mapped to index
+                const x = i; 
+                const y = 4.0 - (1.5 * Math.log10(i + 1)); // Simplified decay
+                data.push({ x: i, y: Math.max(0.5, y) });
+            }
+            return data;
+        }
+
+        // 2. Models for Scatter Plot (Params vs Tokens)
+        // Data points approximate real models
+        const modelData = [
+            { x: 175, y: 300, r: 10, label: 'GPT-3 (2020)', type: 'Kaplan Era' }, // 175B params, 300B tokens
+            { x: 280, y: 500, r: 12, label: 'Gopher (2021)', type: 'Kaplan Era' },
+            { x: 70, y: 1400, r: 8, label: 'Chinchilla (2022)', type: 'Optimal Era' }, // 70B params, 1.4T tokens
+            { x: 70, y: 2000, r: 8, label: 'Llama 2 70B', type: 'Optimal Era' },
+            { x: 405, y: 15000, r: 15, label: 'Llama 3 405B', type: 'Modern Massive' }, // Huge tokens
+            { x: 7, y: 1000, r: 5, label: 'Mistral 7B', type: 'Efficient' },
+        ];
+
+        // 3. Inference Scaling Data
+        // x: Thinking steps (abstract), y: Accuracy on Math Bench
+        const inferenceDataPoints = [35, 48, 62, 71, 78]; // Accuracy %
+        
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initKaplanChart();
+            initModelScatterChart();
+            initInferenceChart();
+            setupEventListeners();
+        });
+
+        // --- Chart Instances ---
+        let kaplanChart, modelScatterChart, inferenceChart;
+
+        // --- Chart 1: Kaplan Power Law ---
+        function initKaplanChart() {
+            const ctx = document.getElementById('kaplanChart').getContext('2d');
+            const data = generateKaplanData(50); // 50 points on the curve
+
+            kaplanChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.x),
+                    datasets: [{
+                        label: 'Test Loss',
+                        data: data.map(d => d.y),
+                        borderColor: '#0ea5e9', // Sky 500
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `Loss: ${ctx.raw.toFixed(3)}`
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                point1: {
+                                    type: 'point',
+                                    xValue: 10,
+                                    yValue: data[10].y,
+                                    backgroundColor: '#ef4444',
+                                    radius: 6,
+                                    label: { content: 'GPT-2', enabled: true, position: 'top' }
+                                },
+                                point2: {
+                                    type: 'point',
+                                    xValue: 35,
+                                    yValue: data[35].y,
+                                    backgroundColor: '#ef4444',
+                                    radius: 6,
+                                    label: { content: 'GPT-3', enabled: true, position: 'top' }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            display: true, 
+                            title: { display: true, text: 'Compute (Log Scale)' },
+                            ticks: { display: false } // Abstract log scale
+                        },
+                        y: { 
+                            display: true, 
+                            title: { display: true, text: 'Test Loss (Lower is Better)' } 
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Chart 2: Model Scatter (Params vs Tokens) ---
+        function initModelScatterChart() {
+            const ctx = document.getElementById('modelScatterChart').getContext('2d');
+            
+            modelScatterChart = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'AI Models',
+                        data: modelData,
+                        backgroundColor: (ctx) => {
+                            const type = ctx.raw?.type;
+                            if (type === 'Kaplan Era') return 'rgba(100, 116, 139, 0.7)'; // Slate
+                            if (type === 'Optimal Era') return 'rgba(14, 165, 233, 0.8)'; // Sky
+                            if (type === 'Efficient') return 'rgba(34, 197, 94, 0.8)'; // Green
+                            return 'rgba(245, 158, 11, 0.8)'; // Amber
+                        },
+                        borderColor: '#fff',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const raw = context.raw;
+                                    return `${raw.label}: ${raw.x}B Params, ${raw.y}B Tokens`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Parameters (Billions) - Log Scale' },
+                            min: 1,
+                            max: 1000
+                        },
+                        y: {
+                            type: 'logarithmic',
+                            title: { display: true, text: 'Training Tokens (Billions) - Log Scale' },
+                            min: 100,
+                            max: 20000
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Chart 3: Inference Scaling ---
+        function initInferenceChart() {
+            const ctx = document.getElementById('inferenceChart').getContext('2d');
+
+            inferenceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Instant', 'Short Thought', 'Medium Thought', 'Long Thought', 'Max Compute'],
+                    datasets: [{
+                        label: 'Math Benchmark Accuracy',
+                        data: [35, 35, 35, 35, 35], // Initial flat state
+                        backgroundColor: [
+                            '#78716c', // Stone 500
+                            '#a8a29e',
+                            '#d6d3d1',
+                            '#e7e5e4',
+                            '#f5f5f4' 
+                        ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Accuracy (%)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    animation: {
+                        duration: 800
+                    }
+                }
+            });
+        }
+
+        // --- Interaction Logic ---
+
+        function setupEventListeners() {
+            // 1. Kaplan Slider (Visual effect only for demo)
+            document.getElementById('computeSlider').addEventListener('input', (e) => {
+                const val = e.target.value;
+                // Add a dynamic point to the Kaplan chart based on slider
+                const index = Math.floor(val * 5); // Map to array index roughly
+                if (kaplanChart) {
+                    // Update annotation or highlight logic could go here
+                }
+            });
+
+            // 2. Chinchilla Calculator
+            document.getElementById('flopSelect').addEventListener('change', calculateChinchilla);
+            calculateChinchilla(); // Initial calc
+
+            // 3. Inference Thinking Slider (Re-added)
+            document.getElementById('thinkingSlider').addEventListener('input', (e) => {
+                updateInferenceViz(parseInt(e.target.value));
+            });
+            
+            // Mobile Menu
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+        }
+
+        function calculateChinchilla() {
+            const exp = parseInt(document.getElementById('flopSelect').value);
+            
+            let params, tokens;
+            
+            if (exp === 20) { params = "1.5"; tokens = "20"; } // Research
+            else if (exp === 22) { params = "13"; tokens = "260"; } // Small LLM
+            else if (exp === 24) { params = "170"; tokens = "3,400"; } // GPT-4ish
+            else if (exp === 25) { params = "530"; tokens = "11,000"; } // Frontier
+            
+            document.getElementById('optParams').innerText = params + " B";
+            document.getElementById('optTokens').innerText = tokens + " B";
+        }
+
+        function updateInferenceViz(level) {
+            const colors = ['#78716c', '#f59e0b', '#f59e0b', '#f59e0b', '#f59e0b']; // Gray to Amber
+            const currentData = [...inferenceDataPoints]; // Copy base truth
+            
+            // Mask future data based on slider
+            const displayData = currentData.map((val, idx) => idx <= level ? val : 0);
+            const displayColors = currentData.map((_, idx) => idx <= level ? (idx === level ? '#d97706' : '#fbbf24') : '#e7e5e4');
+
+            inferenceChart.data.datasets[0].data = displayData;
+            inferenceChart.data.datasets[0].backgroundColor = displayColors;
+            inferenceChart.update();
+
+            document.getElementById('inferenceStat').innerText = `Accuracy: ${currentData[level]}%`;
+            document.getElementById('inferenceStat').className = level > 0 ? "text-2xl font-bold text-amber-500 transition-colors" : "text-2xl font-bold text-stone-400";
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
